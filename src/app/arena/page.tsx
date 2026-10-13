@@ -30,8 +30,8 @@ export default function Arena() {
         </div>
       </header>
 
-      <div className="grid xl:grid-cols-[minmax(0,1fr)_480px]">
-        <section className="border-line p-6 xl:border-r">
+      <div className={data.standings ? "grid xl:grid-cols-[minmax(0,1fr)_480px]" : "grid"}>
+        <section className={`border-line p-6 ${data.standings ? "xl:border-r" : ""}`}>
           <div className="flex items-end justify-between">
             <h1 className="display text-[clamp(48px,6vw,96px)]">
               On the <span className="text-red">wire</span>
@@ -77,6 +77,7 @@ export default function Arena() {
           )}
         </section>
 
+        {data.standings && (
         <aside className="p-6">
           <h2 className="display text-5xl">Leaderboard</h2>
           <div className="mt-6 border-t border-line">
@@ -110,6 +111,7 @@ export default function Arena() {
             Tie-breakers: total → attack → defense → utility → 5-min sudden death.
           </p>
         </aside>
+        )}
       </div>
     </main>
   );

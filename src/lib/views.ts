@@ -85,7 +85,8 @@ export function teamView(teamId: string, role: Role): TeamView {
   return base;
 }
 
-export function arenaView(): ArenaView {
+/** Standings are included only for organizers. */
+export function arenaView(includeStandings = false): ArenaView {
   tick();
   const d = db();
   const order = { live: 0, break: 1, lobby: 2, done: 3 } as const;
@@ -111,7 +112,7 @@ export function arenaView(): ArenaView {
         })),
       };
     });
-  return { serverNow: Date.now(), matches, standings: leaderboard(d), teams: d.teams.length };
+  return { serverNow: Date.now(), matches, standings: includeStandings ? leaderboard(d) : undefined, teams: d.teams.length };
 }
 
 export function adminView() {

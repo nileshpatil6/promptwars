@@ -81,6 +81,6 @@ export interface Standing extends ScoreLine {
 export interface ArenaView {
   serverNow: number;
   matches: ArenaMatch[];
-  standings: Standing[];
+  standings?: Standing[];
   teams: number;
 }
