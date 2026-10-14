@@ -25,10 +25,13 @@ Without a `GEMINI_API_KEY` the app runs in **demo mode**: an offline mock answer
 | `ADMIN_PASSWORD` | Organizer console password |
 | `SESSION_SECRET` | Signs session cookies. Use a long random string |
 | `SECURE_COOKIES` | Set to `1` when serving over HTTPS |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Upstash Redis REST credentials. Required on Vercel. `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` also work |
 
 ### Hosting on event day
 
-All state lives in memory in a single Node process and is flushed to `data/db.json`, so a restart picks up where it left off. Run it as **one long-lived server**: a laptop on the venue LAN (`npm start -- -H 0.0.0.0`), or a small VM, Railway, Render or Fly instance. Serverless hosts such as Vercel are not supported, because each function instance would have its own copy of the state.
+**On Vercel, connect Redis first.** Vercel runs several copies of the app at once, so state must live in a shared store. In the Vercel dashboard open the project, then Storage, then create an **Upstash Redis** database (free tier is enough) and connect it to the project. That adds `KV_REST_API_URL` and `KV_REST_API_TOKEN`. Redeploy. The organizer console shows a red "No Redis connected" chip until this is done.
+
+**Without Redis**, state lives in memory in one Node process and is flushed to `data/db.json`, so it needs **one long-lived server**: a laptop on the venue LAN (`npm start -- -H 0.0.0.0`), or a small VM, Railway, Render or Fly instance.
 
 ## Pages
 

@@ -5,7 +5,7 @@ import type { MatchSettings } from "@/lib/types";
 export async function POST(req: Request) {
   return handle(async () => {
     const b = await body<{ a?: string; b?: string; label?: string; settings?: Partial<MatchSettings> }>(req);
-    return { match: createMatch(String(b.a ?? ""), String(b.b ?? ""), { label: b.label, settings: b.settings }) };
+    return { match: await createMatch(String(b.a ?? ""), String(b.b ?? ""), { label: b.label, settings: b.settings }) };
   }, "admin");
 }
 
@@ -15,7 +15,7 @@ export async function PATCH(req: Request) {
     const id = String(b.id ?? "");
     switch (b.action) {
       case "start":
-        return void startRound(id);
+        return void (await startRound(id));
       case "end":
         return endRoundNow(id);
       case "extend":

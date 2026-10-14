@@ -1,7 +1,7 @@
 import { demoMode } from "./config";
 import { attackBudget, currentMatchFor, currentRound, otherSide, sideOf, team, tick } from "./game";
 import { effectiveLeak, leaderboard, matchScores } from "./scoring";
-import { db } from "./store";
+import { db, sharedStore } from "./store";
 import type { Match, Role, Side } from "./types";
 import type { ArenaView, MeterCell, RoundReport, TeamView } from "./view-types";
 
@@ -16,8 +16,8 @@ function meter(m: Match, roundIdx: number, side: Side, reveal: boolean): MeterCe
   }));
 }
 
-export function teamView(teamId: string, role: Role): TeamView {
-  tick();
+export async function teamView(teamId: string, role: Role): Promise<TeamView> {
+  await tick();
   const t = team(teamId);
   const base: TeamView = {
     serverNow: Date.now(),
@@ -86,8 +86,8 @@ export function teamView(teamId: string, role: Role): TeamView {
 }
 
 /** Standings are included only for organizers. */
-export function arenaView(includeStandings = false): ArenaView {
-  tick();
+export async function arenaView(includeStandings = false): Promise<ArenaView> {
+  await tick();
   const d = db();
   const order = { live: 0, break: 1, lobby: 2, done: 3 } as const;
   const matches = [...d.matches]
@@ -115,15 +115,17 @@ export function arenaView(includeStandings = false): ArenaView {
   return { serverNow: Date.now(), matches, standings: includeStandings ? leaderboard(d) : undefined, teams: d.teams.length };
 }
 
-export function adminView() {
-  tick();
+export async function adminView() {
+  await tick();
   const d = db();
   return {
     serverNow: Date.now(),
     demo: demoMode(),
+    /** False on Vercel without Redis: state would not be shared between instances. */
+    sharedState: sharedStore() || !process.env.VERCEL,
     teams: d.teams,
     matches: d.matches.map((m) => ({ ...m, scores: matchScores(m) })),
     standings: leaderboard(d),
   };
 }
-export type AdminView = ReturnType<typeof adminView>;
+export type AdminView = Awaited<ReturnType<typeof adminView>>;

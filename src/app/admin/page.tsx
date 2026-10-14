@@ -28,6 +28,9 @@ export default function Admin() {
           <div className="eyebrow !text-[9px]">Platform logs are the official record</div>
         </div>
         {data.demo && <span className="chip border-amber/40 text-amber">Demo mode · no API key</span>}
+        {!data.sharedState && (
+          <span className="chip border-red/50 text-red">No Redis connected · teams will vanish on Vercel</span>
+        )}
         <div className="ml-auto flex items-center gap-2">
           <a href="/arena" target="_blank" className="btn btn-sm">
             Live board ↗

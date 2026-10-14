@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { getSession, type Session } from "./auth";
 import { GameError } from "./game";
+import { sync } from "./store";
 
 type Handler = (session: Session | null) => Promise<unknown>;
 
 export async function handle(fn: Handler, need?: "team" | "admin" | "attacker" | "defender") {
   try {
+    await sync();
     const session = await getSession();
     if (need === "admin" && session?.t !== "admin") throw new GameError("Organizer login required", 401);
     if (need && need !== "admin") {
